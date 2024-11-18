@@ -1,62 +1,47 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.List;
-import java.util.Scanner;
 
 public class Main {
-  static boolean hadError = false;
+
+  // Main function that runs the prompt
   public static void main(String[] args) throws IOException {
-    if (args.length > 1) {
-      System.out.println("Usage: jlox [script]");
-      System.exit(64); 
-    } else if (args.length == 1) {
-      runFile(args[0]);
-    } else {
-      runPrompt();
-    }
+    runPrompt();
   }
 
-  private static void runFile(String path) throws IOException {
-    byte[] bytes = Files.readAllBytes(Paths.get(path));
-    run(new String(bytes, Charset.defaultCharset()));
-  }
-
+  // Function that gets input prompt
   private static void runPrompt() throws IOException {
     InputStreamReader input = new InputStreamReader(System.in);
     BufferedReader reader = new BufferedReader(input);
-
+    System.out.println("-----------------------------------------------------------------");
+    System.out.println("Welcome to LOGIC sentence.pl");
+    System.out.println("Please Enter 'EXIT' to terminate");
+    System.out.println("-----------------------------------------------------------------");
     for (;;) { 
       System.out.print("> ");
       String line = reader.readLine();
-      if (line == null) break;
+      if (line.compareTo("EXIT") == 0) break;
+      if (line.compareTo("") == 0) continue;
       run(line);
-      hadError = false;
     }
+    System.out.println("-----------------------------------------------------------------");
+    System.out.println("LOGIC terminated...");
   }
 
+  // Function that runs the given propositional string
   private static void run(String source) {
-    TokenScanner scanner = new TokenScanner(source);
-    List<Token> tokens = scanner.scanTokens();
-
-    // For now, just print the tokens.
-    for (Token token : tokens) {
-      System.out.println(token);
-    }
-
-    if (hadError) System.exit(65);
+    Scanner scanner = new Scanner(source);         // initialize scanner
+    List<Token> tokens = scanner.scanTokens();     // tokenize the input string
+    Parser parser = new Parser(tokens);            // initialse parser
+    Sentence sentence = parser.Parse();            // parse the tokens into a sentence representence by a tree
+    Evaluator evaluator = new Evaluator(sentence); // initialize evaluator
+    evaluator.generateTruthTable();                // generate the truth table from the sentence tree
   }
 
-  static void error(int line, String message) {
-    report(line, "", message);
+  static void reportError(int line, String where,String message) {
+    System.err.println("[line " + line + "] Error at " + where + ": " + message);
+    System.exit(65);
   }
 
-  private static void report(int line, String where, String message) {
-    System.err.println(
-    "[line " + line + "] Error" + where + ": " + message);
-    hadError = true;
-  }
 }
