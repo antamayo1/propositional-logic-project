@@ -2,14 +2,17 @@ enum TokenType {
   // Left and Right Parentheses
   LEFT_PAREN, RIGHT_PAREN,
 
-  // Literals: P, Q, S
-  IDENTIFIER,
+  // Literals: TRUE, FALSE
+  // Identifiers: P, Q, R, S, T
+  TRUE, FALSE, P, Q, R, S, T,
 
-  // Keywords
-  AND, NOT, OR, IMPLIES, EQUIVALENT,
+  // Keywords for Operations
+  NOT,                            // Unary Operations
+  AND, OR, IMPLIES, EQUIVALENT,   // Binary Operations
 
   // Comment
   SLASH,
 
+  // END OF LINE or FILE
   EOF
 }
