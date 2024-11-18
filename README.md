@@ -3,6 +3,8 @@
 
 A simple implementation of a BNF to create a CLI-like compiler to create truth tables of input propositional sentences.
 
+
+
 ## Run Locally
 
 Clone the project
