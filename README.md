@@ -1,3 +1,5 @@
+# JUST CLONE AND RUN main.java FOR NOW
+Batch Files and Shell Files currently undermaintenance
 
 # Propositional Logic
 
