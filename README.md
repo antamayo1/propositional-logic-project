@@ -1,6 +1,3 @@
-# JUST CLONE AND RUN main.java FOR NOW
-Batch Files and Shell Files currently undermaintenance
-
 # Propositional Logic
 
 A simple implementation of a BNF to create a CLI-like compiler to create truth tables of input propositional sentences.
