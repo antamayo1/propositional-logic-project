@@ -3,8 +3,6 @@
 
 A simple implementation of a BNF to create a CLI-like compiler to create truth tables of input propositional sentences.
 
-
-
 ## Run Locally
 
 Clone the project
@@ -15,24 +13,24 @@ Clone the project
 
 ### Windows Users
 
-Run ```BuildLogic.bat``` and wait for the compilation to complete.
+Run ```BuildLogic.bat``` and wait for the compilation to complete, then RESTART your PC to accomodate changes in the PATH.
 
 Now, run command line by searching ```cmd``` and pressing enter.
 
 Run the following command:
 ```
-LOGIC sentence.pl
+LOGIC
 ```
 The command line will show the following if successful
 ```
 -----------------------------------------------------------------
-Welcome to LOGIC sentence.pl
+Welcome to LOGIC
 Please Enter 'EXIT' to terminate
 -----------------------------------------------------------------
 >
 ```
 
-### MacOS Users
+### MacOS Users (STILL NOT TESTED AND USED, DONT USE)
 
 Run ```BuildLogic.sh``` and wait for the compilation to complete.
 

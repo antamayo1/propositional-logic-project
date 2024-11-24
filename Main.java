@@ -15,7 +15,7 @@ public class Main {
     InputStreamReader input = new InputStreamReader(System.in);
     BufferedReader reader = new BufferedReader(input);
     System.out.println("-----------------------------------------------------------------");
-    System.out.println("Welcome to LOGIC sentence.pl");
+    System.out.println("Welcome to LOGIC");
     System.out.println("Please Enter 'EXIT' to terminate");
     System.out.println("-----------------------------------------------------------------");
     for (;;) { 
