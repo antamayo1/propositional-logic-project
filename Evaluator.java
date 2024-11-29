@@ -53,7 +53,7 @@ public class Evaluator {
     List<String> headers = new ArrayList<>();
     headers.addAll(variables);
     headers.addAll(intermediateColumns);
-    source = source.split("//")[0];
+    source = source.split("//")[0].trim();
     headers.set(headers.size() - 1, source);
     
 
