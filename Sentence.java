@@ -1,6 +1,6 @@
 public abstract class Sentence {
   public interface Visitor<R> {
-    R visitAtomicSentence(Atomic sentence);
+    R visitAtomicSentence(AtomicSentence sentence);
     R visitUnarySentence(Unary sentence);
     R visitBinarySentence(Binary sentence);
     R visitGroupingSentence(Grouping sentence);
@@ -10,11 +10,10 @@ public abstract class Sentence {
 
   public abstract <R> R accept(Visitor<R> visitor);
 
-  // Atomic Sentence : TRUE, FALSE, P, Q, S
-  public static class Atomic extends Sentence {
+  public static class AtomicSentence extends Sentence {
     public final String value;
 
-    public Atomic(String value) {
+    public AtomicSentence(String value) {
       this.value = value;
     }
 
@@ -28,7 +27,6 @@ public abstract class Sentence {
     }
   }
 
-  // Unary Sentence: operator sentence    <- operator is always NOT
   public static class Unary extends Sentence {
     public final Token operator;
     public final Sentence right;
@@ -48,7 +46,6 @@ public abstract class Sentence {
     }
   }
   
-  // Binary Sentence: left operator right
   public static class Binary extends Sentence {
     public final Sentence left;
     public final Token operator;
@@ -70,7 +67,6 @@ public abstract class Sentence {
     }
   }
 
-  // Grouping Sentence: ( sentence )
   public static class Grouping extends Sentence {
     public final Sentence expression;
 

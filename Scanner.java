@@ -18,13 +18,7 @@ class Scanner {
     keywords.put("EQUIVALENT",  TokenType.EQUIVALENT);
     keywords.put("TRUE",        TokenType.TRUE);
     keywords.put("FALSE",       TokenType.FALSE);
-    keywords.put("P",           TokenType.P);
-    keywords.put("Q",           TokenType.Q);
-    keywords.put("R",           TokenType.R);
-    keywords.put("S",           TokenType.S);
-    keywords.put("T",           TokenType.T);
   }
-
 
   private int start = 0;
   private int current = 0;
@@ -37,16 +31,15 @@ class Scanner {
 
   // Loops through the source string
   List<Token> scanTokens() {
-    // Funny Solution for cases like P (NOT P)
     // Group the whole expression as (P (NOT P)) to handle errors
-    tokens.add(new Token(TokenType.LEFT_PAREN, "(", null, line));
+    tokens.add(new Token(TokenType.LEFT_PAREN, "(", line));
     while (!isAtEnd()) {
       start = current;
       scanToken();
     }
-    tokens.add(new Token(TokenType.RIGHT_PAREN, ")", null, line));
+    tokens.add(new Token(TokenType.RIGHT_PAREN, ")", line));
     // adds and EOF token at the end to indicate that end of tokens
-    tokens.add(new Token(TokenType.EOF, "", null, line));
+    tokens.add(new Token(TokenType.EOF, "", line));
     return tokens;
   }
 
@@ -55,9 +48,21 @@ class Scanner {
     switch (c) {
       case '(': addToken(TokenType.LEFT_PAREN); break;
       case ')': addToken(TokenType.RIGHT_PAREN); break;
-      case 'P': addToken(TokenType.P); break;
-      case 'Q': addToken(TokenType.Q); break;
-      case 'S': addToken(TokenType.S); break;
+      case 'P':
+        addToken(TokenType.LEFT_PAREN);
+        addToken(TokenType.IDENTIFIERS);
+        addToken(TokenType.RIGHT_PAREN);
+        break;
+      case 'Q':
+        addToken(TokenType.LEFT_PAREN);
+        addToken(TokenType.IDENTIFIERS);
+        addToken(TokenType.RIGHT_PAREN);
+        break;
+      case 'S':
+        addToken(TokenType.LEFT_PAREN);
+        addToken(TokenType.IDENTIFIERS);
+        addToken(TokenType.RIGHT_PAREN);
+        break;
       case '/':
         if (match('/')) {
           while (peek() != '\n' && !isAtEnd()) advance();
@@ -70,7 +75,7 @@ class Scanner {
       case '\t': break;
       default:
         if (isAlpha(c)) {
-          identifier();
+          checkKeywork();
         }
         else {
           Main.reportError(line, "Scanner", source + " has an invalid token.");
@@ -81,14 +86,24 @@ class Scanner {
   }
 
   // May change this to accomodate all placeholders for statements
-  private void identifier() {
+  private void checkKeywork() {
     while (isAlpha(peek())) advance();
     String text = source.substring(start, current);
     TokenType type = keywords.get(text);
     if (type == null){
       Main.reportError(line, "Scanner", source + " has an invalid token.");
     }
-    addToken(type);
+    if(type == TokenType.TRUE){
+      addToken(TokenType.LEFT_PAREN);
+      addToken(type);
+      addToken(TokenType.RIGHT_PAREN);
+    } else if(type == TokenType.FALSE){
+      addToken(TokenType.LEFT_PAREN);
+      addToken(type);
+      addToken(TokenType.RIGHT_PAREN);
+    } else {
+      addToken(type);
+    }  
   }
 
   private boolean isAlpha(char c) {
@@ -123,11 +138,8 @@ class Scanner {
 
   // adds token
   private void addToken(TokenType type) {
-    addToken(type, null);
+    String text = source.substring(start, current);
+    tokens.add(new Token(type, text, line));
   }
 
-  private void addToken(TokenType type, Object literal) {
-    String text = source.substring(start, current);
-    tokens.add(new Token(type, text, literal, line));
-  }
 }

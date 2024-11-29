@@ -43,5 +43,4 @@ public class Main {
     System.err.println("[line " + line + "] Error at " + where + ": " + message);
     System.exit(65);
   }
-
 }

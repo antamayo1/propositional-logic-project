@@ -43,7 +43,6 @@ public class Evaluator {
       // evaluate the expression and get intermediate results
       Interpreter interpreter = new Interpreter(truthAssignment, intermediateResults);
       expression.accept(interpreter);
-
       // save the column names
       intermediateColumns.addAll(intermediateResults.keySet());
     }
@@ -52,6 +51,7 @@ public class Evaluator {
     List<String> headers = new ArrayList<>();
     headers.addAll(variables);
     headers.addAll(intermediateColumns);
+    
 
     // Print the truth table
     printLine(headers);
@@ -110,7 +110,7 @@ public class Evaluator {
     Set<String> atomicSet = new HashSet<>();
     sentence.accept(new Sentence.Visitor<Void>() {
       @Override
-      public Void visitAtomicSentence(Sentence.Atomic sentence) {
+      public Void visitAtomicSentence(Sentence.AtomicSentence sentence) {
         atomicSet.add(sentence.value);
         return null;
       }

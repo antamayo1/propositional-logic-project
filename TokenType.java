@@ -4,7 +4,7 @@ enum TokenType {
 
   // Literals: TRUE, FALSE
   // Identifiers: P, Q, R, S, T
-  TRUE, FALSE, P, Q, R, S, T,
+  TRUE, FALSE, IDENTIFIERS,
 
   // Keywords for Operations
   NOT,                            // Unary Operations

@@ -12,7 +12,7 @@ public class Interpreter implements Sentence.Visitor<Boolean> {
   // if the sentence is TRUE, FALSE, P, Q, S, then just get the value
   // Note that intermediate results is not used here because this are the initial values
   @Override
-  public Boolean visitAtomicSentence(Sentence.Atomic sentence) {
+  public Boolean visitAtomicSentence(Sentence.AtomicSentence sentence) {
     return truthAssignment.get(sentence.value);
   }
 
@@ -21,13 +21,13 @@ public class Interpreter implements Sentence.Visitor<Boolean> {
   public Boolean visitUnarySentence(Sentence.Unary sentence) {
     Boolean right = sentence.right.accept(this);
     Boolean result = !right;
-
-    intermediateResults.put("NOT " + sentence.right.getString(), result);
-
+    String rightString = sentence.right.getString();
+    rightString = rightString.replaceAll("\\(([^()]*)\\)", "$1");
+    intermediateResults.put("NOT " + rightString, result);
     return result;
   }
 
-  // if the sentence is bianry, get the value of the left and right then do the operation according to type
+  // if the sentence is binary, get the value of the left and right then do the operation according to type
   @Override
   public Boolean visitBinarySentence(Sentence.Binary sentence) {
     Boolean left = sentence.left.accept(this);
@@ -51,8 +51,10 @@ public class Interpreter implements Sentence.Visitor<Boolean> {
         result = false;
         break;
     }
+    String rightString = sentence.right.getString();
+    rightString = rightString.replaceAll("\\(([^()]*)\\)", "$1");
+    String key = sentence.left.getString() + " " + sentence.operator.getLexeme() + " " + rightString;
 
-    String key = sentence.left.getString() + " " + sentence.operator.getLexeme() + " " + sentence.right.getString();
     intermediateResults.put(key, result);
 
     return result;

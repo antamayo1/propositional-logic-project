@@ -1,20 +1,4 @@
 import java.util.List;
-/*
-[Original BNF]
-<Sentence>        -> <AtomicSentence> | <ComplexSentence>
-<AtomicSentence>  -> "TRUE" | "FALSE" | "P" | "Q’ | "S"
-<ComplexSentence> -> "(" <Sentence> ")" | <Sentence> <Connective> <Sentence> | "NOT" <Sentence>
-<Connective>      ->  "NOT" | "AND" | "O" | "IMPLIES" | "EQUIVALENT"
-
-[New Extended BNF with Precedence]
-<Sentence>    -> <Equivalent>
-<Equivalent>  -> <Implication> {"EQUIVALENT" <Implication>}   // Precedence: EQUIVALENT > IMPLIES
-<Implication> -> <Or> {"IMPLIES" <Or>}                        // Precedence: IMPLIES > OR
-<Or>          -> <And> {"OR" <And>}                           // Precedence: OR > AND
-<And>         -> <Unary> {"AND" <Unary>}                      // Precedence: AND > NOT
-<Unary>       -> "NOT" <Unary> | <Primary>                    // Precedence: NOT > Atomic Sentences
-<Primary>     -> "TRUE" | "FALSE" | "P" | "Q" | "S" | "(" <Sentence> ")"
- */
 
 public class Parser {
   private final List<Token> tokens;
@@ -24,92 +8,69 @@ public class Parser {
     this.tokens = tokens;
   }
 
-  // <Sentence> start of recursive descent
   public Sentence Parse() {
-    return Sentence();
+    Sentence sentence = Sentence();
+    if (sentence == null) {
+      Main.reportError(1, "Parser", "Sentence not valid.");
+    }
+    return sentence;
   }
 
-  // <Sentence> -> <Equivalent>
+  // <Sentence> -> <AtomicSentence> | <ComplexSentence>
   private Sentence Sentence() {
-    return Equivalent();
+    Sentence sentence = ComplexSentence();
+    return sentence != null ? sentence : AtomicSentence();
   }
 
-  // <Equivalent> -> <Implication> {"EQUIVALENT" <Implication>}
-  private Sentence Equivalent() {
-    Sentence sentence = Implication();                             
-    while (match(TokenType.EQUIVALENT)) {                   
-      Token operator = previous();
-      Sentence right = Implication();
-      sentence = new Sentence.Binary(sentence, operator, right);
-    }
-    return sentence;                                             
-  }
-
-  // <Implication> -> <Or> {"IMPLIES" <Or>}
-  private Sentence Implication() {
-    Sentence expr = Or();
-    while (match(TokenType.IMPLIES)) {
-      Token operator = previous();
-      Sentence right = Or();
-      expr = new Sentence.Binary(expr, operator, right);
-    }
-    return expr;
-  }
-
-  // <Or> -> <And> {"OR" <And>}
-  private Sentence Or() {
-    Sentence sentence = And();
-    while (match(TokenType.OR)) {
-      Token operator = previous();
-      Sentence right = And();
-      sentence = new Sentence.Binary(sentence, operator, right);
-    }
-    return sentence;
-  }
-
-  // <And> -> <Unary> {"AND" <Unary>}
-  private Sentence And() {
-    Sentence sentence = Unary();
-    while (match(TokenType.AND)) {
-      Token operator = previous();
-      Sentence right = Unary();
-      sentence = new Sentence.Binary(sentence, operator, right);
-    }
-    return sentence;
-  }
-
-  // <Unary> -> "NOT" <Unary> | <Primary>
-  private Sentence Unary() {
-    if (match(TokenType.NOT)) {
-      Token operator = previous();
-      Sentence right = Unary();
-      return new Sentence.Unary(operator, right);
-    }
-    return Primary();
-  }
-
-  // <Primary> -> "TRUE" | "FALSE" | "P" | "Q" | "S" | "(" <Sentence> ")"
-  private Sentence Primary() {
-    if (match(TokenType.TRUE, TokenType.FALSE, TokenType.P, TokenType.Q, TokenType.S)) {
-      return new Sentence.Atomic(previous().getLexeme());
-    }
-
+  private Sentence ComplexSentence() {
     if (match(TokenType.LEFT_PAREN)) {
-      Sentence sentence = Sentence();
-      if (match(TokenType.RIGHT_PAREN)) {
+        // "(" <Sentence> ")"
+        Sentence sentence = Sentence();
+        if (sentence == null) {
+            Main.reportError(1, "Parser", "Sentence expected inside parentheses.");
+        }
+        if (!match(TokenType.RIGHT_PAREN)) {
+            Main.reportError(1, "Parser", "Expected ')' after sentence.");
+        }
+        if (Connective()) {
+            Token operator = previous();
+            Sentence right = Sentence();
+            if (right == null) {
+                Main.reportError(1, "Parser", "Expected sentence after " + previous().getLexeme() + ".");
+            }
+            return new Sentence.Binary(sentence, operator, right);
+        }
         return new Sentence.Grouping(sentence);
-      }
     }
 
-    // Error handling for invalid sentences
-    if (peek().getType() == TokenType.LEFT_PAREN) {
-      Main.reportError(peek().getLine(), "Parser", "Sentence is invalid.\n\t Invalid Grouping.");
-    } else {
-      Main.reportError(peek().getLine(), "Parser", "Sentence is invalid.\n\t The Token " + peek().getLexeme() + " is not used in proper context.");
+    if (match(TokenType.NOT)) {
+        // "NOT" <Sentence>
+        Token operator = previous();
+        Sentence right = Sentence();
+        if (right == null) {
+            Main.reportError(1, "Parser", "Expected sentence after NOT.");
+        }
+        return new Sentence.Unary(operator, right);
+    }
+
+    return null;
+}
+
+  // <AtomicSentence> -> "TRUE" | "FALSE" | "P" | "Q" | "S"
+  private Sentence AtomicSentence() {
+    if (match(TokenType.TRUE, TokenType.FALSE, TokenType.IDENTIFIERS)) {
+      Token token = previous();
+      return new Sentence.AtomicSentence(token.getLexeme());
     }
     return null;
   }
 
+  // <Connective> -> "AND" | "OR" | "IMPLIES" | "EQUIVALENT"
+  private boolean Connective() {
+    return match(TokenType.AND) || match(TokenType.OR) || match(TokenType.IMPLIES) || match(TokenType.EQUIVALENT);
+  }
+
+  // Check if the current token matches any of the given types
   private boolean match(TokenType... types) {
     for (TokenType type : types) {
       if (check(type)) {
@@ -120,24 +81,30 @@ public class Parser {
     return false;
   }
 
+  // Check if the current token matches the given type
   private boolean check(TokenType type) {
     return !isAtEnd() && peek().getType() == type;
   }
 
+  // Consume and return the current token
   private Token advance() {
     if (!isAtEnd()) current++;
     return previous();
   }
 
+  // Return true if at the end of the token list
   private boolean isAtEnd() {
     return peek().getType() == TokenType.EOF;
   }
 
+  // Get the current token
   private Token peek() {
     return tokens.get(current);
   }
 
+  // Get the previous token
   private Token previous() {
     return tokens.get(current - 1);
   }
+
 }
