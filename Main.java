@@ -35,7 +35,7 @@ public class Main {
     List<Token> tokens = scanner.scanTokens();     // tokenize the input string
     Parser parser = new Parser(tokens);            // initialse parser
     Sentence sentence = parser.Parse();            // parse the tokens into a sentence representence by a tree
-    Evaluator evaluator = new Evaluator(sentence); // initialize evaluator
+    Evaluator evaluator = new Evaluator(sentence, source); // initialize evaluator
     evaluator.generateTruthTable();                // generate the truth table from the sentence tree
   }
 

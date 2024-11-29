@@ -7,6 +7,8 @@ class Scanner {
   private final String source;
   private final List<Token> tokens = new ArrayList<>();
   private static final Map<String, TokenType> keywords;
+  private static int left_parentheses = 0;
+  private static int right_parentheses = 0;
 
   // Define a hashmap that saves the compiler's keywords
   static {
@@ -40,14 +42,17 @@ class Scanner {
     tokens.add(new Token(TokenType.RIGHT_PAREN, ")", line));
     // adds and EOF token at the end to indicate that end of tokens
     tokens.add(new Token(TokenType.EOF, "", line));
+    if (left_parentheses != right_parentheses) {
+      Main.reportError(line, "Scanner", source + " has unbalanced parentheses.");
+    }
     return tokens;
   }
 
   private void scanToken() {
     char c = advance();
     switch (c) {
-      case '(': addToken(TokenType.LEFT_PAREN); break;
-      case ')': addToken(TokenType.RIGHT_PAREN); break;
+      case '(': addToken(TokenType.LEFT_PAREN); left_parentheses++; break;
+      case ')': addToken(TokenType.RIGHT_PAREN); right_parentheses++; break;
       case 'P':
         addToken(TokenType.LEFT_PAREN);
         addToken(TokenType.IDENTIFIERS);

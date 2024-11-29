@@ -3,8 +3,10 @@ import java.util.*;
 public class Evaluator {
   private final Sentence expression;
   private final Set<String> atomicPropositions;
+  private String source;
 
-  public Evaluator(Sentence expression) {
+  public Evaluator(Sentence expression, String source) {
+    this.source = source;
     this.expression = expression;
     this.atomicPropositions = extractAtomicPropositions(expression); // gets all atomic propositions like TRUE, FALSE, P, Q, S
   }
@@ -51,6 +53,8 @@ public class Evaluator {
     List<String> headers = new ArrayList<>();
     headers.addAll(variables);
     headers.addAll(intermediateColumns);
+    source = source.split("//")[0];
+    headers.set(headers.size() - 1, source);
     
 
     // Print the truth table

@@ -24,33 +24,40 @@ public class Parser {
 
   private Sentence ComplexSentence() {
     if (match(TokenType.LEFT_PAREN)) {
-        // "(" <Sentence> ")"
-        Sentence sentence = Sentence();
-        if (sentence == null) {
-            Main.reportError(1, "Parser", "Sentence expected inside parentheses.");
+      // "(" <Sentence> ")"
+      Sentence sentence = Sentence();
+      if (sentence == null) {
+        if(peek().getType() == TokenType.RIGHT_PAREN) {
+          Main.reportError(1, "Parser", "Sentence expected inside parenthesis.");
+        } else {
+          Main.reportError(1, "Parser", "Incomplete Binary Operation: " + peek().getLexeme());
         }
-        if (!match(TokenType.RIGHT_PAREN)) {
-            Main.reportError(1, "Parser", "Expected ')' after sentence.");
+      }
+      if (!match(TokenType.RIGHT_PAREN)) {
+        Main.reportError(1, "Parser", "Invalid Sentence.");
+      }
+      if (Connective()) {
+        Token operator = previous();
+        if (operator.getType() == TokenType.NOT) {
+          Main.reportError(1, "Parser", "NOT cannot be used a connective.");
         }
-        if (Connective()) {
-            Token operator = previous();
-            Sentence right = Sentence();
-            if (right == null) {
-                Main.reportError(1, "Parser", "Expected sentence after " + previous().getLexeme() + ".");
-            }
-            return new Sentence.Binary(sentence, operator, right);
+        Sentence right = Sentence();
+        if (right == null) {
+          Main.reportError(1, "Parser", "Incomplete Binary Operation: " + previous().getLexeme());
         }
-        return new Sentence.Grouping(sentence);
+        return new Sentence.Binary(sentence, operator, right);
+      }
+      return new Sentence.Grouping(sentence);
     }
 
     if (match(TokenType.NOT)) {
-        // "NOT" <Sentence>
-        Token operator = previous();
-        Sentence right = Sentence();
-        if (right == null) {
-            Main.reportError(1, "Parser", "Expected sentence after NOT.");
-        }
-        return new Sentence.Unary(operator, right);
+      // "NOT" <Sentence>
+      Token operator = previous();
+      Sentence right = Sentence();
+      if (right == null) {
+        Main.reportError(1, "Parser", "Expected sentence after NOT.");
+      }
+      return new Sentence.Unary(operator, right);
     }
 
     return null;
@@ -67,7 +74,7 @@ public class Parser {
 
   // <Connective> -> "AND" | "OR" | "IMPLIES" | "EQUIVALENT"
   private boolean Connective() {
-    return match(TokenType.AND) || match(TokenType.OR) || match(TokenType.IMPLIES) || match(TokenType.EQUIVALENT);
+    return match(TokenType.AND) || match(TokenType.OR) || match(TokenType.IMPLIES) || match(TokenType.EQUIVALENT) || match(TokenType.NOT);
   }
 
   // Check if the current token matches any of the given types
