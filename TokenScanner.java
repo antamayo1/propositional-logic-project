@@ -3,7 +3,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-class Scanner {
+class TokenScanner {
   private final String source;
   private final List<Token> tokens = new ArrayList<>();
   private static final Map<String, TokenType> keywords;
@@ -27,7 +27,7 @@ class Scanner {
   private int line = 1;
 
   // Constructor that takes the source expression
-  Scanner(String source) {
+  TokenScanner(String source) {
     this.source = source;
   }
 

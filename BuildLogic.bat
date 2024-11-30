@@ -36,7 +36,7 @@ echo Message: Creating batch file as connection to LOGIC
 (
   echo @echo off
   echo cd /d "%~dp0"
-  echo java -cp "%CD%\bin" Main
+  echo java -cp "%CD%\bin" Main %%1
 ) > "%CD%\bin\LOGIC.bat"
 echo.
 echo LOGIC command created successfully!
