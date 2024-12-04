@@ -12,7 +12,7 @@ Clone the project
 
 ### Windows Users
 
-Run ```BuildLogic.bat``` and wait for the compilation to complete, then RESTART your PC to accomodate changes in the PATH.
+Run ```BuildLogic.bat``` and wait for the compilation to complete, then **RESTART** your PC to accomodate changes in the PATH.
 
 Now, run command line by searching ```cmd``` and pressing enter.
 
@@ -29,35 +29,60 @@ Please Enter 'EXIT' to terminate
 >
 ```
 
-### MacOS Users (STILL NOT TESTED AND USED, DONT USE)
-
-Run ```BuildLogic.sh``` and wait for the compilation to complete.
-
-Note that the exported path is temporary, thus you may run the following in the shell to make it permanent.
-
-zsh users:
-``` 
-nano ~/.zshrc
-export PATH="$PATH:/path/to/your/project/bin"
-source ~/.zshrc
+The user can also run the program with an input file.
 ```
-bash users:
-``` 
-nano ~/.bashrc
-export PATH="$PATH:/path/to/your/project/bin"
-source ~/.bashrc
+P AND Q
+P AND (NOT Q)
+(P IMPLIES Q) EQUIVALENT ((NOT P) AND Q)
 ```
-Change the path to the path of the bin created by ```BuildLogic.sh```.
+saved as ```sentence.pl``` or any file with ```.pl``` extension.
 
-Run the following command in the shell:
+Run the command to process the file. **Note that this will not enter prompt mode.**
 ```
 LOGIC sentence.pl
 ```
-The command line will show the following if successful
+### MacOS Users
+
+1. Suppose the files are downloaded in the folder ```CMSC124```. Open the terminal and ensure that the current working directory is the ```CMSC124``` folder.
 ```
------------------------------------------------------------------
-Welcome to LOGIC sentence.pl
-Please Enter 'EXIT' to terminate
------------------------------------------------------------------
->
+> cd ~/Documents/CMSC124
 ```
+2. To verify that all files are downloaded and stored in the ```CMSC124``` folder, type the command:
+```
+> ls -l
+```
+3. Ensure that Java is installed by typing:
+```
+> java -version
+```
+4. Run the shell script ```BuildLogic.sh``` by typing this in the terminal:
+```
+> bash BuildLogic.sh
+```
+5. If the script executes successfully, a bin directory will be created. Verify this by typing the com-
+mand:
+```
+> ls -l
+```
+### Execution
+1. Open the terminal and ensure that the current working directory is the ```CMSC124``` folder:
+```
+> cd ~/Documents/CMSC124
+```
+2. Change to the bin directory created by the shell script:
+```
+> cd bin
+```
+3. To run ```LOGIC.sh``` with a ```<source file>.pl```, type:
+```
+> ./LOGIC.sh sentence.pl
+```
+4. In case there was no ```<source file>.pl```, run the executable file ```LOGIC.sh``` by typing:
+```
+> ./LOGIC.sh
+```
+5. Input the logic sentence, following the grammar. For example:
+```
+> P AND Q
+```
+6. To terminate the program, input ```EXIT```.
