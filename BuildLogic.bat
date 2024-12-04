@@ -1,6 +1,5 @@
 @echo off
 cls
-:: Show the installation process...
 echo ---------------------------------------------------------------------
 echo BuildLogic.bat set-ups LOGIC in your machine with the following steps
 echo ---------------------------------------------------------------------
